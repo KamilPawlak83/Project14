@@ -23,7 +23,6 @@ class GameScene: SKScene {
     var bestPlayer2level = ""
     var bestPlayer3level = ""
     
-    
     var score = 0 {
         didSet {
             gameScore.text = "Score: \(score)"
@@ -45,12 +44,12 @@ class GameScene: SKScene {
     
     var livesImages = [SKSpriteNode]()
     var lives = 3
-   
+    
     
     
     override func didMove(to view: SKView) {
         
-       //MARK: - Load Data
+        //MARK: - Load Data
         let defaults = UserDefaults.standard
         highscore1 = defaults.integer(forKey: "Highscore1")
         highscore2 = defaults.integer(forKey: "Highscore2")
@@ -62,10 +61,7 @@ class GameScene: SKScene {
         
         
         
-        //MARK: - Front End
-        
-    
-        
+        //MARK: - Front End (We create buttons,labels, slots and lives)
         let background = SKSpriteNode(imageNamed: "whackBackground")
         background.position = CGPoint(x: 512, y: 384)
         background.blendMode = .replace
@@ -109,9 +105,6 @@ class GameScene: SKScene {
         addChild(newGameButton)
         newGameButton.isHidden = true
         
-        createLevelButons()
-        createHighScoreLabels()
-        
         backButton = SKLabelNode(fontNamed: "Chalkduster")
         backButton.position = CGPoint(x: 512, y: 104)
         backButton.fontSize = 45
@@ -128,6 +121,8 @@ class GameScene: SKScene {
         addChild(saveYourRecordButton)
         saveYourRecordButton.isHidden = true
         
+        createLevelButons()
+        createHighScoreLabels()
         createSlots()
         createLives()
         
@@ -140,7 +135,7 @@ class GameScene: SKScene {
         let location = touch.location(in: self)
         let tappedNodes = nodes(at: location)
         
-    //MARK: - Check enemies and score points
+        //MARK: - Check enemies and score points
         for node in tappedNodes {
             
             guard let whackSlot = node.parent?.parent as? WhackSlot else {continue} // continue czyli kontunuujemy przeszukiwanie tablicy
@@ -158,7 +153,7 @@ class GameScene: SKScene {
                 whackSlot.charNode.yScale = 1.1
                 subtractLife()
                 
-               
+                
                 
             } else if node.name == "charEnemy" {
                 DispatchQueue.main.async {
@@ -171,7 +166,7 @@ class GameScene: SKScene {
             }
         }
         
-    //MARK: - check labels and buttons
+        //MARK: - check labels and buttons (probably tapped)
         if tappedNodes.contains(backButton) {
             startGameButton.isHidden = false
             highScoresButton.isHidden = false
@@ -209,8 +204,8 @@ class GameScene: SKScene {
         if tappedNodes.contains(saveYourRecordButton) {
             addYourNameToRecordList()
         }
-    
-    //MARK: - What Level was choosen?
+        
+        //MARK: - What Level was chosen?
         if tappedNodes.contains(level1Button) {
             level = 1
             startGame(highScoreLabelText: highscore1)
@@ -227,20 +222,17 @@ class GameScene: SKScene {
             popupTime = popupTime - (Double(level) / 8.0)
             startGame(highScoreLabelText: highscore3)
         }
-        
-       
     }
     
     
-   
-//MARK: - Functions
+    //MARK: - Functions
     
     func createLives() {
         for i in 0 ..< 3 {
             let spriteNode = SKSpriteNode(imageNamed: "sliceLife")
             spriteNode.position = CGPoint(x: CGFloat(834 + (i * 70)), y: 720)
             addChild(spriteNode)
-
+            
             livesImages.append(spriteNode)
         }
     }
@@ -260,7 +252,7 @@ class GameScene: SKScene {
         level1Button.text = "Level 1"
         addChild(level1Button)
         level1Button.isHidden = true
-       
+        
         level2Button = SKLabelNode(fontNamed: "Chalkduster")
         level2Button.position = CGPoint(x: 512, y: 284)
         level2Button.fontSize = 45
@@ -306,10 +298,12 @@ class GameScene: SKScene {
     
     
     func createEnemy() {
+        // If You have 0 lives return immediately
         if lives == 0 {return}
         
         rounds += 1
         
+        //How many rounds game takes
         if rounds >= 50 {
             gameOver()
             checkNewRecord()
@@ -324,7 +318,7 @@ class GameScene: SKScene {
         if Int.random(in: 0...12) > 6 {  slots[2].show(hideTime: popupTime) }
         if Int.random(in: 0...12) > 8 { slots[3].show(hideTime: popupTime) }
         if Int.random(in: 0...12) > 11 { slots[4].show(hideTime: popupTime)  }
-
+        
         let minDelay = popupTime / 2.0
         let maxDelay = popupTime * 2
         let delay = Double.random(in: minDelay...maxDelay)
@@ -341,36 +335,33 @@ class GameScene: SKScene {
         addChild(slot)
         slots.append(slot)
     }
-        
+    
     func checkNewRecord() {
-            
+        
         switch level {
         case 1:
             if score > highscore1 {
-            highScoreLabel.text = "Old Record: \(highscore1)"
-            highscore1 = score
-           
-            addNewRecordLabel()
+                highScoreLabel.text = "Old Record: \(highscore1)"
+                highscore1 = score
+                addNewRecordLabel()
             }
         case 2:
             if score > highscore2 {
-            highScoreLabel.text = "Old Record: \(highscore2)"
-            highscore2 = score
-            
-            addNewRecordLabel()
+                highScoreLabel.text = "Old Record: \(highscore2)"
+                highscore2 = score
+                addNewRecordLabel()
             }
         case 3:
             if score > highscore3 {
-            highScoreLabel.text = "Old Record: \(highscore3)"
-            highscore3 = score
-            
-            addNewRecordLabel()
+                highScoreLabel.text = "Old Record: \(highscore3)"
+                highscore3 = score
+                addNewRecordLabel()
             }
         default:
             break
         }
     }
-
+    
     func hideLevelButtons() {
         level1Button.isHidden = true
         level2Button.isHidden = true
@@ -388,6 +379,7 @@ class GameScene: SKScene {
         }
     }
     
+    // this label will appear only if You break the record
     func addNewRecordLabel() {
         let highscoreLabel = SKLabelNode(fontNamed: "Chalkduster")
         highscoreLabel.position = CGPoint(x: 512, y: 194)
@@ -402,9 +394,9 @@ class GameScene: SKScene {
     
     func subtractLife() {
         lives -= 1
-
+        
         var life: SKSpriteNode
-
+        
         switch lives {
         case 2:
             life = livesImages[0]
@@ -413,11 +405,12 @@ class GameScene: SKScene {
         case 0:
             life = livesImages[2]
             gameOver()
+            // if You made 3 mistakes You can still break the record!
             checkNewRecord()
         default:
             return
         }
-
+        
         life.texture = SKTexture(imageNamed: "sliceLifeGone")
         life.xScale = 1.3
         life.yScale = 1.3
@@ -436,23 +429,23 @@ class GameScene: SKScene {
         newGameButton.isHidden = false
     }
     
-   
-}
     
+}
+
 extension GameScene: UITextFieldDelegate {
     
     func addYourNameToRecordList() {
-        
+        // This is the only place where we save data - if You won't write your name tha data (score) won't be saved
         let ac = UIAlertController(title: "Save Your New Record", message: "Enter Your Name - max 15 characters", preferredStyle: .alert)
-       
+        
         ac.addTextField { textField in
             textField.delegate = self
         }
-              
+        
         let submitAction = UIAlertAction(title: "OK", style: .default) {
             [weak ac] _ in
             guard let userName = ac?.textFields?[0].text else {return}
-           
+            
             switch self.level {
             case 1:
                 self.bestPlayer1level = userName
@@ -480,19 +473,13 @@ extension GameScene: UITextFieldDelegate {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // get the current text, or use an empty string if that failed
         let currentText = textField.text ?? ""
-
-        // attempt to read the range they are trying to change, or exit if we can't
         guard let stringRange = Range(range, in: currentText) else { return false }
-
-        // add their new text to the existing text
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-
-        // make sure the result is under 15 characters
+        // max char = 15
         return updatedText.count <= 15
     }
-        
-}
     
+}
+
 
