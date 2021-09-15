@@ -26,7 +26,7 @@ I added several important features like:
 
 * To Do
 
-## To Do List
+#### To Do List
 
 * I want to reorganized info about New Record - right now user don't know if he see button or label.
 * I want do add reset highscore Button (with biometric authentification).
