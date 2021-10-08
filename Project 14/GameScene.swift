@@ -138,7 +138,7 @@ class GameScene: SKScene {
         //MARK: - Check enemies and score points
         for node in tappedNodes {
             
-            guard let whackSlot = node.parent?.parent as? WhackSlot else {continue} // continue czyli kontunuujemy przeszukiwanie tablicy
+            guard let whackSlot = node.parent?.parent as? WhackSlot else {continue} // we stop checking current item and we take another in array
             
             if !whackSlot.isVisible {continue}
             if whackSlot.isHit {continue}
